@@ -36,3 +36,8 @@ jobs:
       - name: Generate repodata.txt msg databases
         run: |
           compute_msg_sha256 "data/slater" ".msg" > data/slater/repodata.txt
+
+      - name: Commit changes
+        run: |
+          git commit -m "Update repodata.txt" -a
+
