@@ -1,0 +1,50 @@
+name: repodata
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  generate_repodata:
+    runs-on: ubuntu-latest
+    name: Generate repodata.txt on data folders
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Generate repodata.txt msg databases
+        run: |
+          # Define the function within the workflow
+          compute_msg_sha256() {
+              # $1 is the folder to compute sha256
+              # $2 is the file extension to compute sha256
+              old_pwd=$(pwd)
+              cd $1
+              for file in $(ls *"$2"| sort); do
+                  sha256sum "$file"
+              done
+              cd $old_pwd
+          }
+          
+          # Call the function to generate repodata.txt
+          compute_msg_sha256 "slater/db" ".msg" > slater/db/repodata.txt
+
+      - name: Commit changes
+        run: |
+          # Configure Git user details
+          git config --global user.email "qcdevs-bot@mail.com"
+          git config --global user.name "database-bot"
+          
+          # Add the repodata.txt file
+          git add slater/db/repodata.txt
+          
+          if [[ -n "$(git diff --staged)" ]]; then
+              # Commit the changes
+              git commit -m "Update repodata.txt"
+              
+              # Push the changes to the repository
+              git push origin main
+          fi
