@@ -27,7 +27,7 @@ jobs:
           # $2 is the file extension to compute sha256
             old_pwd=$PWD
             cd $1
-            for file in $(ls "$folder"/*"$2"| sort); do
+            for file in $(ls *"$2"| sort); do
                 sha256sum "$file"
             done
             cd $old_pwd
