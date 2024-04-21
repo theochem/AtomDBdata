@@ -1,0 +1,39 @@
+name: repodata
+
+on:
+  push:
+    branches:
+     - master
+    tags-ignore:
+      - '**'
+  pull_request:
+
+jobs:
+  generate_repodata:
+    runs-on: ubuntu-latest
+    name: Generate repodata.txt on data folders
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: set up variables
+      run: |
+        git config --global user.email "qcdevs@gmail.com"
+        git config --global user.name "database-bot"
+
+        compute_msg_sha256() {
+          # $1 is the folder to compute sha256
+          # $2 is the file extension to compute sha256
+            old_pwd=$PWD
+            cd $1
+            for file in $(ls "$folder"/*"$2"| sort); do
+                sha256sum "$file"
+            done
+            cd $old_pwd
+        }
+
+      - name: Generate repodata.txt msg databases
+        run: |
+          compute_msg_sha256 "data/slater" ".msg" > data/slater/repodata.txt
+          
