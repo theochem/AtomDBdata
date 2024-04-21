@@ -18,22 +18,21 @@ jobs:
         uses: actions/checkout@v2
 
       - name: set up variables
-      run: |
-        git config --global user.email "qcdevs@gmail.com"
-        git config --global user.name "database-bot"
+        run: |
+          git config --global user.email "qcdevs@gmail.com"
+          git config --global user.name "database-bot"
 
-        compute_msg_sha256() {
-          # $1 is the folder to compute sha256
-          # $2 is the file extension to compute sha256
-            old_pwd=$PWD
-            cd $1
-            for file in $(ls *"$2"| sort); do
-                sha256sum "$file"
-            done
-            cd $old_pwd
-        }
+          compute_msg_sha256() {
+            # $1 is the folder to compute sha256
+            # $2 is the file extension to compute sha256
+              old_pwd=$PWD
+              cd $1
+              for file in $(ls *"$2"| sort); do
+                  sha256sum "$file"
+              done
+              cd $old_pwd
+          }
 
       - name: Generate repodata.txt msg databases
         run: |
           compute_msg_sha256 "data/slater" ".msg" > data/slater/repodata.txt
-          
