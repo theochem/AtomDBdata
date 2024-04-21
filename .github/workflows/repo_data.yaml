@@ -41,8 +41,10 @@ jobs:
           # Add the repodata.txt file
           git add slater/db/repodata.txt
           
-          # Commit the changes
-          git commit -m "Update repodata.txt"
-          
-          # Push the changes to the repository
-          git push origin main
+          if [[ -n "$(git diff --staged)" ]]; then
+              # Commit the changes
+              git commit -m "Update repodata.txt"
+              
+              # Push the changes to the repository
+              git push origin main
+          fi
