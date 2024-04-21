@@ -35,7 +35,7 @@ jobs:
       - name: Commit changes
         run: |
           # Configure Git user details
-          git config --global user.email "qcdevs@gmail.com"
+          git config --global user.email "qcdevs-bot@mail.com"
           git config --global user.name "database-bot"
           
           # Add the repodata.txt file
