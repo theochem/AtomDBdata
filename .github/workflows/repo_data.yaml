@@ -35,7 +35,7 @@ jobs:
 
       - name: Generate repodata.txt msg databases
         run: |
-          compute_msg_sha256 "data/slater/db" ".msg" > data/slater/db/repodata.txt
+          compute_msg_sha256 "slater/db" ".msg" > slater/db/repodata.txt
 
       - name: Commit changes
         run: |
