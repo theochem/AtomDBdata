@@ -31,6 +31,7 @@ jobs:
                   sha256sum "$file"
               done
               cd $old_pwd
+          }
 
       - name: Generate repodata.txt msg databases
         run: |
