@@ -15,36 +15,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Generate repodata.txt msg databases
-        run: |
-          # Define the function within the workflow
-          compute_msg_sha256() {
-              # $1 is the folder to compute sha256
-              # $2 is the file extension to compute sha256
-              old_pwd=$(pwd)
-              cd $1
-              for file in $(ls *"$2"| sort); do
-                  sha256sum "$file"
-              done
-              cd $old_pwd
-          }
-          
-          # Call the function to generate repodata.txt
-          compute_msg_sha256 "slater/db" ".msg" > slater/db/repodata.txt
-
-      - name: Commit changes
+      - name: Update repodata.txt files
         run: |
           # Configure Git user details
           git config --global user.email "qcdevs-bot@mail.com"
           git config --global user.name "database-bot"
-          
-          # Add the repodata.txt file
-          git add slater/db/repodata.txt
-          
-          if [[ -n "$(git diff --staged)" ]]; then
-              # Commit the changes
-              git commit -m "Update repodata.txt"
-              
-              # Push the changes to the repository
-              git push origin main
+
+          # Store current working directory
+          cwd=$(pwd)
+
+          # Update repodata.txt for each git-tracked directory not starting with '.'
+          for dir in $(git ls-tree -rtd --format='%(path)' HEAD ./ | grep -Ev '^\.'); do
+            # Temporarily `cd` to ${dir} to compute checksums and git operations
+            cd "${cwd}/${dir}"
+
+            # Get sorted basenames of files not starting with '.' and not named 'repodata.txt'
+            files=$(find . -maxdepth 1 -type f ! -name '.*' ! -name 'repodata.txt' -exec basename -a {} + | sort)
+
+            # If ${files} is non-empty, write SHA-256 checksums to 'repodata.txt' and then stage it
+            if [ -n "${files}" ]; then
+              sha256sum ${files} > 'repodata.txt'
+              git add 'repodata.txt'
+            fi
+          done
+
+          # Return to current working directory
+          cd "${cwd}"
+
+      - name: Commit repodata.txt file changes
+        run: |
+          # Commit and push changes if any have been staged by `git add`
+          if git diff --quiet --staged; then
+            git commit -m "Update repodata.txt"
+            git push origin main
           fi
