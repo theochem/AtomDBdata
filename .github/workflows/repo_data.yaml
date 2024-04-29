@@ -25,7 +25,7 @@ jobs:
           cwd=$(pwd)
 
           # Update repodata.txt for each git-tracked directory not starting with '.'
-          for dir in $(git ls-tree -rtd --format='%(path)' HEAD ./ | grep -Ev '^\.'); do
+          for dir in $(git ls-tree -rtd --name-only HEAD ./ | grep -Ev '^\.'); do
             # Temporarily `cd` to ${dir} to compute checksums and git operations
             cd "${cwd}/${dir}"
 
